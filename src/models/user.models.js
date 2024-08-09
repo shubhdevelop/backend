@@ -21,23 +21,19 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    fullName: {
+    fullname: {
       type: String,
       required: true,
       trim: true,
       index: true,
     },
-    avatar: {
-      type: String, // cloudinary url
-      required: true,
-    },
     coverImage: {
       type: String, // cloudinary url
     },
-    watchHistory: [
+    docs: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Video",
+        ref: "Doc",
       },
     ],
     password: {
@@ -56,7 +52,8 @@ const userSchema = new Schema(
 userSchema.pre("save", async function (next) {
   //pass must be in string!
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
+
   next();
 });
 
@@ -91,5 +88,5 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
-const User = new mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 export { User };
